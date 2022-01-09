@@ -1,207 +1,232 @@
-let frases;
-const tamanhoAmostra = 5;
+let sentences;
+let labels;
+const sampleSize = 5;
 let result = [];
-let idAtual = 1;
+let currentId = 1;
 let fileUploaderEl = document.querySelector("#uploader");
-fileUploaderEl.addEventListener("change", carregarFrases);
-let fileDownloaderEl = document.querySelector("#baixar-resultados");
+fileUploaderEl.addEventListener("change", loadSentences);
+let fileDownloaderEl = document.querySelector("#download-results");
 
 
-function carregarFrases() {
+function loadSentences() {
   file = document.querySelector('#uploader').files[0]
   reader = new FileReader();
   reader.onload = function () {
-    frases = JSON.parse(this.result);
-    document.getElementById('baixar-resultados').disabled = true;
-    preencheVetorResultado();
-    if(localStorage.getItem("result") != null){
+    let input = JSON.parse(this.result);
+    sentences = input.sentences;
+    labels = input.labels;
+    loadInstructions();
+    fileDownloaderEl.disabled = true;
+    fillResultsArray();
+    if (localStorage.getItem("result") != null) {
       result = JSON.parse(localStorage.getItem("result"));
     }
-    montaPaginacao();
+    buildPage();
   }
   reader.readAsText(file);
 }
 
-function preencheVetorResultado(){
-  for (let i = 0; i < frases.length; i++) {
+function fillResultsArray() {
+  for (let i = 0; i < sentences.length; i++) {
     result[i] = {
       "id": i,
-      "relevancia": [],
-      "idxAlvo": frases[i].idxAlvo
+      "idxAlvo": sentences[i].idxAlvo,
+      "verified": false,
+      "relevance": []
     }
-    for (let j = 0; j < frases[j].sentenca.length; j++) {
-      result[i].relevancia[j] = false;
+
+    for (let j = 0; j < sentences[i].sentence.length; j++) {
+      result[i].relevance[j] = false;
     }
-    result[i].relevancia[frases[i].idxAlvo] = true;
-    }
-}
-
-function prox5() {
-  idAtual += tamanhoAmostra;
-
-  montaPaginacao();
-}
-
-function ant5() {
-  idAtual -= tamanhoAmostra;
-
-  montaPaginacao();
-}
-
-function criaPaginacao() {
-  let paginacaoEl = document.createElement("div");
-  paginacaoEl.classList.add("paginacao");
-
-  let botaoEsquerdaEl = document.createElement("button");
-  let botaoDireitaEl = document.createElement("button");
-
-  botaoEsquerdaEl.classList.add("btn");
-  botaoEsquerdaEl.classList.add("btn-light");
-  botaoDireitaEl.classList.add("btn");
-  botaoDireitaEl.classList.add("btn-light");
-
-  if (idAtual + 5 < frases.length) {
-    botaoDireitaEl.addEventListener("click", prox5);
+    result[i].relevance[sentences[i].idxAlvo] = true;
   }
-  if (idAtual - 5 > 0) {
-    botaoEsquerdaEl.addEventListener("click", ant5);
+}
+
+function next5() {
+  currentId += sampleSize;
+
+  buildPage();
+}
+
+function prev5() {
+  currentId -= sampleSize;
+
+  buildPage();
+}
+
+function createNavigator() {
+  let pageEl = document.createElement("div");
+  pageEl.classList.add("paginacao");
+
+  let leftBtnEl = document.createElement("button");
+  let rightBtnEl = document.createElement("button");
+
+  leftBtnEl.classList.add("btn");
+  leftBtnEl.classList.add("btn-light");
+  rightBtnEl.classList.add("btn");
+  rightBtnEl.classList.add("btn-light");
+
+  if (currentId + 5 < sentences.length) {
+    rightBtnEl.addEventListener("click", next5);
+  }
+  if (currentId - 5 > 0) {
+    leftBtnEl.addEventListener("click", prev5);
   }
 
-  let iconeDireitaEl = document.createElement("i");
-  let iconeEsquerdaEl = document.createElement("i");
+  let rightIconEl = document.createElement("i");
+  let leftIconEl = document.createElement("i");
 
-  iconeDireitaEl.classList.add("gg-arrow-right");
-  iconeEsquerdaEl.classList.add("gg-arrow-left");
+  rightIconEl.classList.add("gg-arrow-right");
+  leftIconEl.classList.add("gg-arrow-left");
 
-  let indicesFrasesEl = document.createElement("span");
+  let idSentenceEl = document.createElement("span");
 
-  if (idAtual + 4 < frases.length) {
-    indicesFrasesEl.innerHTML = `Frases ${idAtual}-${idAtual + 4} de ${frases.length}`;
+  if (currentId + 4 < sentences.length) {
+    idSentenceEl.innerHTML = `Sentences ${currentId}-${currentId + 4} of ${sentences.length}`;
   }
   else {
-    indicesFrasesEl.innerHTML = `Frases ${idAtual}-${frases.length} de ${frases.length}`;
+    idSentenceEl.innerHTML = `Sentences ${currentId}-${sentences.length} of ${sentences.length}`;
   }
 
-  botaoDireitaEl.appendChild(iconeDireitaEl);
-  botaoEsquerdaEl.appendChild(iconeEsquerdaEl);
+  rightBtnEl.appendChild(rightIconEl);
+  leftBtnEl.appendChild(leftIconEl);
 
-  paginacaoEl.appendChild(botaoEsquerdaEl);
-  paginacaoEl.appendChild(indicesFrasesEl);
-  paginacaoEl.appendChild(botaoDireitaEl);
+  pageEl.appendChild(leftBtnEl);
+  pageEl.appendChild(idSentenceEl);
+  pageEl.appendChild(rightBtnEl);
 
-  return paginacaoEl;
+  return pageEl;
 }
 
-function montaPaginacao() {
-  let containerEl = document.querySelector("#container-frases");
+function buildPage() {
+  let containerEl = document.querySelector("#container-sentences");
   containerEl.innerHTML = "";
-  let paginacaoTopoEl = criaPaginacao();
-  let paginacaoBottomEl = criaPaginacao();
+  let navTopEl = createNavigator();
+  let navBottomEl = createNavigator();
 
-  let frasesEl = desenhaFrases();
+  let sentencesEl = drawSentences();
 
-  containerEl.appendChild(paginacaoTopoEl);
-  containerEl.appendChild(frasesEl);
-  containerEl.appendChild(paginacaoBottomEl);
+  containerEl.appendChild(navTopEl);
+  containerEl.appendChild(sentencesEl);
+  containerEl.appendChild(navBottomEl);
 }
 
-function desenhaFrases() {
-  let frasesEl = document.createElement("div");
-  frasesEl.classList.add("frases");
-  for (let id = idAtual; id < tamanhoAmostra + idAtual && id <= frases.length; id++) {
-    let fraseAtual = frases[id - 1];
+function drawSentences() {
+  let sentencesEl = document.createElement("div");
+  sentencesEl.classList.add("sentences");
+  for (let id = currentId; id < sampleSize + currentId && id <= sentences.length; id++) {
+    let currentSentence = sentences[id - 1];
     let articleEl = document.createElement("article");
-    let spanIdEl = document.createElement("span");
     let divInfoEl = document.createElement("div");
-    let divPalavrasEl = document.createElement("div");
+    let divTargetsEl = document.createElement("div");
+    let divWordsEl = document.createElement("div");
 
-    divPalavrasEl.classList.add("palavras")
-    spanIdEl.classList.add("hidden");
-    spanIdEl.innerText = fraseAtual.id;
-    divInfoEl.innerText = `As palavras que classificam ${fraseAtual.sentenca[fraseAtual.idxAlvo]} como ${fraseAtual.classePredita} são:`;
+    divWordsEl.classList.add("palavras")
+    divInfoEl.innerHTML = `<b>${currentSentence.id}</b>.`
+    if (id < 5) {
+      divInfoEl.innerHTML += ` The words that somehow contribute to classify
+                            <b>${currentSentence.sentence[currentSentence.idxAlvo]}</b> as
+                            <b>${currentSentence.predictClass}</b> are:`;
+    }
 
+    divTargetsEl.innerHTML = `<b>Target word: </b>${currentSentence.sentence[currentSentence.idxAlvo]}<br>
+                              <b>PredictedClass: </b>${currentSentence.predictClass}`;
+    divTargetsEl.setAttribute("title", currentSentence.predictClass + " | " + labels.find(element => element.name == currentSentence.predictClass).description);
 
-    for (let j = 0; j < fraseAtual.sentenca.length; j++) {
-      const palavra = fraseAtual.sentenca[j];
-      let palavraEl = document.createElement("span");
-      let palavraRaw = document.createElement("span");
+    for (let j = 0; j < currentSentence.sentence.length; j++) {
+      const word = currentSentence.sentence[j];
+      let skipable = ["(", ")", ":", ";", "_", "/", "\\", "[", "]", "{", "}", "+", "=", "*", "&", "^", "%", "$", "#", "~", "`", "|", "<", ">"];
+      if (word.trim() == "") {
+        continue;
+      }
+      let wordEl = document.createElement("span");
+      let wordRaw = document.createElement("span");
       let input = document.createElement("input");
 
+
       input.addEventListener("click", () => {
-        atualizaVetor(id, j);
+        updateArray(id, j);
       });
 
-      palavraEl.classList.add("palavra");
-      palavraRaw.innerText = palavra;
+      wordEl.classList.add("palavra");
+      wordRaw.innerText = word;
 
       input.setAttribute("type", "checkbox");
-      input.setAttribute("name", "relevancia");
 
-      input.checked = result[id-1].relevancia[j];
+      input.checked = result[id - 1].relevance[j];
 
-      if (palavra == fraseAtual.sentenca[fraseAtual.idxAlvo]) {
-        palavraEl.classList.add("alvo");
+      if (word == currentSentence.sentence[currentSentence.idxAlvo]) {
+        wordEl.classList.add("alvo");
+        wordEl.setAttribute("title", currentSentence.predictClass + " | " + labels.find(element => element.name == currentSentence.predictClass).description);
         input.classList.add("hidden");
       }
 
-      palavraEl.appendChild(palavraRaw);
-      palavraEl.appendChild(input);
-      divPalavrasEl.appendChild(palavraEl);
+      wordEl.appendChild(wordRaw);
+      if (!skipable.includes(word)) {
+        wordEl.appendChild(input);
+      }
+      divWordsEl.appendChild(wordEl);
     }
 
-    articleEl.appendChild(spanIdEl);
+    let verifiedEl = document.createElement("span");
+    let verifiedRaw = document.createElement("span");
+    let verifiedInput = document.createElement("input");
+    
+    verifiedEl.classList.add("none");
+    verifiedRaw.innerText = "NONE";
+    verifiedInput.setAttribute("type", "checkbox");
+    verifiedInput.checked = result[id - 1].verified;
+    
+    verifiedInput.addEventListener("click", () => {
+      result[id - 1].verified = verifiedInput.checked;
+      for (let l = 0; l < result[id - 1].relevance.length; l++) {
+        result[id - 1].relevance[l] = false;
+      }
+
+      localStorage.setItem("result", JSON.stringify(result));
+    });
+    verifiedEl.appendChild(verifiedRaw);
+    verifiedEl.appendChild(verifiedInput);
+    divWordsEl.appendChild(verifiedEl);
+    
     articleEl.appendChild(divInfoEl);
-    articleEl.appendChild(divPalavrasEl);
-    frasesEl.appendChild(articleEl);
+    articleEl.appendChild(divTargetsEl)
+    articleEl.appendChild(divWordsEl);
+    sentencesEl.appendChild(articleEl);
   }
-  return frasesEl;
+  return sentencesEl;
 
 }
 
-function atualizaVetor(id, j,) {
-    result[id-1].relevancia[j] = !result[id-1].relevancia[j];
-    localStorage.setItem("result", JSON.stringify(result));
-    fileDownloaderEl.disabled = false;
+function updateArray(id, j,) {
+  result[id - 1].relevance[j] = !result[id - 1].relevance[j];
+  result[id - 1].verified = true;
+  localStorage.setItem("result", JSON.stringify(result));
+  fileDownloaderEl.disabled = false;
 }
 
-fileDownloaderEl.addEventListener("click", baixarJSON);
+fileDownloaderEl.addEventListener("click", downloadJSON);
 
-function baixarJSON() {
-    let jsonContent = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result));
-    let link = document.createElement("a");
-    link.setAttribute("href", jsonContent);
-    link.setAttribute("download", "relatorio.json");
-    document.body.appendChild(link);
-    link.click();
+function downloadJSON() {
+  let jsonContent = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result));
+  let link = document.createElement("a");
+  link.setAttribute("href", jsonContent);
+  link.setAttribute("download", "relatorio.json");
+  document.body.appendChild(link);
+  link.click();
 }
 
-/**
- * TODO: mudar estrutura de saida e entrada
- * labels: []
- * sentences: [{
-    "id": 0,
-    "validate": false,
-    "relevance": [
-      true,
-      true,
-      false,
-      false,
-      true
-    ],
-    "target": "1"
-  },]
-  {
-    "id": "1",
-    "sentence": [
-      "O",
-      "Jaguar",
-      "atacou",
-      "o",
-      "transeunte"
-    ],
-    "target": "1",
-    "predictclass": "Animal"
-  },
- * 
- * 
- */
+function loadInstructions() {
+  let instructionsEl = document.querySelector(".modal-body");
+  instructionsEl.innerHTML = "";
+  let pInfo = document.createElement("p");
+  pInfo.innerText = `You must mark the words that contribute to 
+    labeling the target word. Possible classifications 
+    are listed below along with their description.`;
+  instructionsEl.appendChild(pInfo);
+  labels.forEach(element => {
+    let pLabels = document.createElement("p");
+    pLabels.innerText = `${element.name}: ${element.description}`;
+    instructionsEl.appendChild(pLabels);
+  });
+}
