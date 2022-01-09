@@ -1,0 +1,67 @@
+header {
+  background-color: #336fd8;
+  padding: 0.5rem 2rem;
+}
+.row {
+  display: flex;
+}
+#nav {
+  display: flex;
+  justify-content: space-between;
+}
+button {
+  font-size: 0;
+}
+header {
+  color: white;
+}
+
+#fechar-modal {
+  height: auto;
+  width: auto;
+  font-size: 12px;
+  margin-right: 0.2rem;
+}
+main{
+  margin: 2rem 0rem;
+}
+.paginacao {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+.paginacao span {
+  margin: 0 10px;
+}
+article {
+  background-color: whitesmoke;
+  padding: 1rem;
+  margin: 2vh 2vw;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  overflow-x: auto;
+}
+.palavra {
+  background-color: lightgrey;
+  margin: 0px 10px;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+}
+.palavra span{
+  display: block;
+}
+.alvo{
+  background-color: lightgreen;
+}
+.palavras{
+    display: flex;
+    margin-top: 10px;
+    width: fit-content;
+}
+.hidden{
+  display: none;
+}

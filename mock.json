@@ -1,0 +1,125 @@
+[
+  {
+    "id": "1",
+    "sentence": [
+      "O",
+      "Jaguar",
+      "atacou",
+      "o",
+      "transeunte"
+    ],
+    "target": "1",
+    "predictclass": "Animal"
+  },
+  {
+    "id": "2",
+    "sentenca": [
+      "O",
+      "Jaguar",
+      "atacou",
+      "o",
+      "transeunte"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "Animal"
+  },
+  {
+    "id": "3",
+    "sentenca": [
+      "O",
+      "Jaguar",
+      "atacou",
+      "o",
+      "transeunte"
+    ],
+    "idxAlvo": "2",
+    "classePredita": "Animal"
+  },
+  {
+    "id": "4",
+    "sentenca": [
+      "O",
+      "Jaguar",
+      "atacou",
+      "o",
+      "transeunte"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "Animal"
+  },
+  {
+    "id": "5",
+    "sentenca": [
+      "A",
+      "casa",
+      "é",
+      "verde"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "E-Local"
+  },
+  {
+    "id": "6",
+    "sentenca": [
+      "A",
+      "casa",
+      "é",
+      "verde"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "E-Local"
+  },
+  {
+    "id": "7",
+    "sentenca": [
+      "A",
+      "casa",
+      "é",
+      "verde"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "E-Local"
+  },
+  {
+    "id": "8",
+    "sentenca": [
+      "A",
+      "casa",
+      "é",
+      "verde"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "E-Local"
+  },
+  {
+    "id": "9",
+    "sentenca": [
+      "A",
+      "casa",
+      "é",
+      "verde",
+      "A",
+      "casa",
+      "é",
+      "verde",
+      "A",
+      "casa",
+      "é",
+      "verde",
+      "A",
+      "casa",
+      "é",
+      "verde",
+      "A",
+      "casa",
+      "é",
+      "verde",
+      "A",
+      "casa",
+      "é",
+      "verde"
+    ],
+    "idxAlvo": "1",
+    "classePredita": "E-Local"
+  }
+]
